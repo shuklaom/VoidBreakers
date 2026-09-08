@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../Systems/Storage/StorageComponent.h"
 #include "BaseCharacter.generated.h"
+
+class UStorageComponent;
 
 UCLASS()
 class VOIDBREAKERS_API ABaseCharacter : public ACharacter
@@ -28,5 +31,9 @@ protected:
 	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 private:
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStorageComponent* Storage;
 
 };
