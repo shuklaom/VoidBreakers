@@ -27,6 +27,8 @@ ABaseCharacter::ABaseCharacter()
 	GetCharacterMovement()->BrakingDecelerationFalling = 0.0f;
 
 	Storage = CreateDefaultSubobject<UStorageComponent>(TEXT("Storage"));
+
+	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 }
 
 void ABaseCharacter::Tick(float DeltaTime)

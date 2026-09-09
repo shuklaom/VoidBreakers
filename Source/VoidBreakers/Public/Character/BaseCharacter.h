@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "../Systems/Storage/StorageComponent.h"
+#include "../Systems/Health/HealthComponent.h"
 #include "BaseCharacter.generated.h"
 
 class UStorageComponent;
+class UHealthComponent;
 
 UCLASS()
 class VOIDBREAKERS_API ABaseCharacter : public ACharacter
@@ -36,4 +38,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStorageComponent* Storage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UHealthComponent* Health;
 };
