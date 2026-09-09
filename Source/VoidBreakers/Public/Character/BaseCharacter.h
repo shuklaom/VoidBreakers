@@ -34,6 +34,10 @@ protected:
 
 private:
 
+public:
+	UFUNCTION(BlueprintPure, Category = "Storage")
+	UStorageComponent* GetStorage() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStorageComponent* Storage;

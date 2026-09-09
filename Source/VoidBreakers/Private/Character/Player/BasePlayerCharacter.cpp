@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Blueprint/UserWidget.h"
 
 ABasePlayerCharacter::ABasePlayerCharacter()
 {
@@ -23,6 +24,9 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	InventoryWidget = nullptr;
+	bIsInventoryOpen = false;
 }
 
 void ABasePlayerCharacter::Tick(float DeltaTime)
@@ -41,6 +45,8 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::Look);
+
+		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::ToggleInventory);
 	}
 }
 
@@ -81,6 +87,18 @@ void ABasePlayerCharacter::DoJumpEnd()
 	if (CanJump())
 	{
 		StopJumping();
+	}
+}
+
+void ABasePlayerCharacter::ToggleInventory()
+{
+	if (bIsInventoryOpen)
+	{
+		CloseInventory();
+	}
+	else
+	{
+		OpenInventory();
 	}
 }
 
@@ -130,4 +148,28 @@ void ABasePlayerCharacter::OnEndOverlap(UPrimitiveComponent* OverlappedComponent
 float ABasePlayerCharacter::InvertMovement(float Value, bool bIsInverted)
 {
 	return bIsInverted ? -Value : Value;
+}
+
+void ABasePlayerCharacter::OpenInventory()
+{
+	if (bIsInventoryOpen || !InventoryWidgetClass) return;
+
+	InventoryWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
+
+	if (!InventoryWidget) return;
+
+	InventoryWidget->AddToViewport();
+
+	bIsInventoryOpen = true;
+}
+
+void ABasePlayerCharacter::CloseInventory()
+{
+	if (!bIsInventoryOpen || !InventoryWidget) return;
+
+	InventoryWidget->RemoveFromParent();
+	
+	InventoryWidget = nullptr;
+	
+	bIsInventoryOpen = false;
 }

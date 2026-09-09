@@ -21,6 +21,8 @@ Config
 *.xcodeproj
 *.xcworkspace
 
+**/Ins.md
+
 *.png
 *.jpg
 *.jpeg

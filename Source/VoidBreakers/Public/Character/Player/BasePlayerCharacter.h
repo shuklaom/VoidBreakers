@@ -10,6 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class UUserWidget;
 struct FInputActionValue;
 
 UCLASS()
@@ -36,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void DoJumpEnd();
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void ToggleInventory();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -50,6 +54,10 @@ protected:
 private:
 	float InvertMovement(float Value, bool bIsInverted);
 
+	void OpenInventory();
+
+	void CloseInventory();
+
 public:
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -57,17 +65,20 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "InputAction")
+	UPROPERTY(EditAnywhere, Category = "InputAction|Locomotion")
 	UInputMappingContext* PlayerInputMappingContext;
 
-	UPROPERTY(EditAnywhere, Category="InputAction")
+	UPROPERTY(EditAnywhere, Category="InputAction|Locomotion")
 	UInputAction* JumpAction;
 
-	UPROPERTY(EditAnywhere, Category = "InputAction")
+	UPROPERTY(EditAnywhere, Category = "InputAction|Locomotion")
 	UInputAction* MoveAction;
 
-	UPROPERTY(EditAnywhere, Category = "InputAction")
+	UPROPERTY(EditAnywhere, Category = "InputAction|Locomotion")
 	UInputAction* LookAction;
+
+	UPROPERTY(EditAnywhere, Category = "InputAction|Inventory")
+	UInputAction* InventoryAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InvertMovement")
 	bool bInvertCameraX;
@@ -75,10 +86,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InvertMovement")
 	bool bInvertCameraY;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI|Inventory")
+	TSubclassOf<UUserWidget> InventoryWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* InventoryWidget;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	bool bIsInventoryOpen;
 };

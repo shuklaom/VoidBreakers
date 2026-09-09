@@ -58,3 +58,8 @@ void ABaseCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 void ABaseCharacter::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 }
+
+UStorageComponent* ABaseCharacter::GetStorage() const
+{
+	return Storage;
+}
