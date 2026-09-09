@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void SetHealth(float NewHealth);
 
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void SetMaxHealth(float NewMaxHealth);
+
 protected:
 	virtual void BeginPlay() override;
 

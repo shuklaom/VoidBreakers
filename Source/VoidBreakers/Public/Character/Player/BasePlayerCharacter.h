@@ -69,9 +69,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "InputAction")
 	UInputAction* LookAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InputAction")
-	bool bDoJumping;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InvertMovement")
 	bool bInvertCameraX;
 

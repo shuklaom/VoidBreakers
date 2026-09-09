@@ -69,6 +69,24 @@ void UHealthComponent::SetHealth(float NewHealth)
 	}
 }
 
+void UHealthComponent::SetMaxHealth(float NewMaxHealth)
+{
+	const float OldMaxHealth = MaxHealth;
+	MaxHealth = FMath::Max(0.0f, NewMaxHealth);
+
+	if (MaxHealth != OldMaxHealth)
+	{
+		CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
+		const float HealthChange = CurrentHealth - OldMaxHealth;
+		OnHealthChanged.Broadcast(CurrentHealth, MaxHealth, HealthChange);
+
+		if (IsDead())
+		{
+			OnDeath.Broadcast();
+		}
+	}
+}
+
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();

@@ -70,7 +70,7 @@ void ABasePlayerCharacter::DoLook(float Yaw, float Pitch)
 
 void ABasePlayerCharacter::DoJumpStart()
 {
-	if (bDoJumping)
+	if (CanJump())
 	{
 		Jump();
 	}
@@ -78,7 +78,7 @@ void ABasePlayerCharacter::DoJumpStart()
 
 void ABasePlayerCharacter::DoJumpEnd()
 {
-	if (bDoJumping)
+	if (CanJump())
 	{
 		StopJumping();
 	}
