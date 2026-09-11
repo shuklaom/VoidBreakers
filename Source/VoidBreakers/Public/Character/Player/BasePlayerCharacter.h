@@ -40,6 +40,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void ToggleInventory();
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void Interact();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -79,6 +82,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "InputAction|Inventory")
 	UInputAction* InventoryAction;
+
+	UPROPERTY(EditAnywhere, Category = "InputAction|Interact")
+	UInputAction* InteractAction;
+
+	UPROPERTY(EditAnywhere, Category = "Interaction")
+	float InteractRange = 300.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InvertMovement")
 	bool bInvertCameraX;

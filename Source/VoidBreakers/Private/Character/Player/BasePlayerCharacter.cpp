@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
+#include "Systems/Items/PickupComponent.h"
 
 ABasePlayerCharacter::ABasePlayerCharacter()
 {
@@ -47,6 +48,8 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::Look);
 
 		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::ToggleInventory);
+
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Interact);
 	}
 }
 
@@ -99,6 +102,27 @@ void ABasePlayerCharacter::ToggleInventory()
 	else
 	{
 		OpenInventory();
+	}
+}
+
+void ABasePlayerCharacter::Interact()
+{
+	if (!FollowCamera) return;
+
+	const FVector TraceStart = FollowCamera->GetComponentLocation();
+	const FVector TraceEnd = TraceStart + (FollowCamera->GetForwardVector() * InteractRange);
+
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams);
+
+	if (!bHit || !HitResult.GetActor()) return;
+
+	if (UPickupComponent* PickupComponent = HitResult.GetActor()->FindComponentByClass<UPickupComponent>())
+	{
+		PickupComponent->TryPickup(this);
 	}
 }
 
