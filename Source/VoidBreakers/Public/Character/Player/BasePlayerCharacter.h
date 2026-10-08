@@ -12,6 +12,7 @@ class UInputAction;
 class UInputMappingContext;
 class UUserWidget;
 struct FInputActionValue;
+class ABasePickupItem;
 
 UCLASS()
 class VOIDBREAKERS_API ABasePlayerCharacter : public ABaseCharacter
@@ -42,6 +43,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void Interact();
+
+	void UpdateInteractionTarget();
 
 protected:
 	virtual void BeginPlay() override;
@@ -100,6 +103,11 @@ protected:
 
 	UPROPERTY()
 	UUserWidget* InventoryWidget;
+
+	UPROPERTY()
+	TObjectPtr<ABasePickupItem> CurrentInteractionTarget;
+
+	FTimerHandle InteractionCheckTimerHandle;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

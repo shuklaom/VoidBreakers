@@ -10,6 +10,7 @@
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
 #include "Systems/Items/PickupComponent.h"
+#include "Systems/Items/BasePickupItem.h"
 
 ABasePlayerCharacter::ABasePlayerCharacter()
 {
@@ -107,22 +108,42 @@ void ABasePlayerCharacter::ToggleInventory()
 
 void ABasePlayerCharacter::Interact()
 {
-	if (!FollowCamera) return;
-
-	const FVector TraceStart = FollowCamera->GetComponentLocation();
-	const FVector TraceEnd = TraceStart + (FollowCamera->GetForwardVector() * InteractRange);
-
-	FHitResult HitResult;
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
-
-	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams);
-
-	if (!bHit || !HitResult.GetActor()) return;
-
-	if (UPickupComponent* PickupComponent = HitResult.GetActor()->FindComponentByClass<UPickupComponent>())
+	if (CurrentInteractionTarget)
 	{
-		PickupComponent->TryPickup(this);
+		CurrentInteractionTarget->GetPickup()->TryPickup(this);
+	}
+}
+
+void ABasePlayerCharacter::UpdateInteractionTarget()
+{
+	ABasePickupItem* NewTarget = nullptr;
+
+	if (FollowCamera)
+	{
+		const FVector TraceStart = FollowCamera->GetComponentLocation();
+		const FVector TraceEnd = TraceStart + (FollowCamera->GetForwardVector() * InteractRange);
+
+		FHitResult HitResult;
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+		{
+			NewTarget = Cast<ABasePickupItem>(HitResult.GetActor());
+		}
+	}
+
+	if(NewTarget != CurrentInteractionTarget)
+	{
+		if (CurrentInteractionTarget)
+		{
+			CurrentInteractionTarget->HideInteractionPrompt();
+		}
+		if (NewTarget)
+		{
+			NewTarget->ShowInteractionPrompt();
+		}
+		CurrentInteractionTarget = NewTarget;
 	}
 }
 
@@ -140,6 +161,8 @@ void ABasePlayerCharacter::BeginPlay()
 			}
 		}
 	}
+
+	GetWorldTimerManager().SetTimer(InteractionCheckTimerHandle, this, &ABasePlayerCharacter::UpdateInteractionTarget, 0.1f, true);
 }
 
 void ABasePlayerCharacter::Move(const FInputActionValue& Value)
@@ -178,8 +201,11 @@ void ABasePlayerCharacter::OpenInventory()
 {
 	if (bIsInventoryOpen || !InventoryWidgetClass) return;
 
-	InventoryWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
-
+	if (!InventoryWidget)
+	{
+		InventoryWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryWidgetClass);
+	}
+	
 	if (!InventoryWidget) return;
 
 	InventoryWidget->AddToViewport();
@@ -192,8 +218,6 @@ void ABasePlayerCharacter::CloseInventory()
 	if (!bIsInventoryOpen || !InventoryWidget) return;
 
 	InventoryWidget->RemoveFromParent();
-	
-	InventoryWidget = nullptr;
 	
 	bIsInventoryOpen = false;
 }
